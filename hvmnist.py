@@ -199,47 +199,35 @@ def test_accuracy():
 	plot_example_errors(cls_pred,correct)
 
 def plot_conv_layer(layer, image):
-    # Assume layer is a TensorFlow op that outputs a 4-dim tensor
-    # which is the output of a convolutional layer,
-    # e.g. layer_conv1 or layer_conv2.
-
-    # Create a feed-dict containing just one image.
-    # Note that we don't need to feed y_true because it is
-    # not used in this calculation.
+    
     feed_dict = {x: [image]}
 
-    # Calculate and retrieve the output values of the layer
-    # when inputting that image.
+   
     values = sess.run(layer, feed_dict=feed_dict)
 
-    # Number of filters used in the conv. layer.
+   
     num_filters = values.shape[3]
 
-    # Number of grids to plot.
-    # Rounded-up, square-root of the number of filters.
+   
     num_grids =int(math.ceil(math.sqrt(num_filters)))
     
-    # Create figure with a grid of sub-plots.
     fig, axes = plt.subplots(num_grids, num_grids)
 
-    # Plot the output images of all the filters.
+   
     for i, ax in enumerate(axes.flat):
-        # Only plot the images for valid filters.
+       
         if i<num_filters:
-            # Get the output image of using the i'th filter.
-            # See new_conv_layer() for details on the format
-            # of this 4-dim tensor.
+           
             img = values[0, :, :, i]
 
-            # Plot image.
+           
             ax.imshow(img, interpolation='nearest', cmap='binary')
         
-        # Remove ticks from the plot.
+        
         ax.set_xticks([])
         ax.set_yticks([])
     
-    # Ensure the plot is shown correctly with multiple plots
-    # in a single Notebook cell.
+   
     plt.ion()
     plt.show()
     plt.savefig("layer.png")
@@ -247,48 +235,33 @@ def plot_conv_layer(layer, image):
 
 
 def plot_conv_weights(weights, input_channel=0):
-    # Assume weights are TensorFlow ops for 4-dim variables
-    # e.g. weights_conv1 or weights_conv2.
-    
-    # Retrieve the values of the weight-variables from TensorFlow.
-    # A feed-dict is not necessary because nothing is calculated.
+
     w = sess.run(weights)
 
-    # Get the lowest and highest values for the weights.
-    # This is used to correct the colour intensity across
-    # the images so they can be compared with each other.
+    
     w_min = np.min(w)
     w_max = np.max(w)
 
-    # Number of filters used in the conv. layer.
     num_filters = w.shape[3]
 
-    # Number of grids to plot.
-    # Rounded-up, square-root of the number of filters.
     num_grids = int(math.ceil(math.sqrt(num_filters)))
-    
-    # Create figure with a grid of sub-plots.
+
     fig, axes = plt.subplots(num_grids, num_grids)
 
-    # Plot all the filter-weights.
     for i, ax in enumerate(axes.flat):
-        # Only plot the valid filter-weights.
+      
         if i<num_filters:
-            # Get the weights for the i'th filter of the input channel.
-            # See new_conv_layer() for details on the format
-            # of this 4-dim tensor.
+            
             img = w[:, :, input_channel, i]
 
-            # Plot image.
+            
             ax.imshow(img, vmin=w_min, vmax=w_max,
                       interpolation='nearest', cmap='seismic')
-        
-        # Remove ticks from the plot.
+       
         ax.set_xticks([])
         ax.set_yticks([])
     
-    # Ensure the plot is shown correctly with multiple plots
-    # in a single Notebook cell.
+    
     plt.ion()
     plt.show()
     plt.savefig("weights.png")
